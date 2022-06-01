@@ -1,0 +1,89 @@
+from collections import UserDict
+
+
+class Field:
+    """
+    Класс родительский для всех полей - общая логика для всех полей
+    """
+    def __init__(self, value) -> None:
+        self.value = value
+
+
+class Name(Field):
+    pass
+
+
+class Phone(Field):
+    pass
+
+
+class Record:
+    """
+    Логика добавления/удаления/редактирования необязательных полей и хранения обязательного поля Name
+    """
+
+    def __init__(self, name, phone=None, end_phone=None) -> None:
+        self.name = name
+        self.end_phone = end_phone
+        self.phones = []
+        if phone:
+            self.phones.append(phone)
+
+    def add_phone(self, phone: Phone):
+        for p in self.phones:
+            if phone.value == p.value:
+                return f'Phone {p} in record'
+            else:
+                self.phones.append(phone)
+                return f'Phone {phone.value} add successful'
+
+    def del_phone(self, phone: Phone):
+        for p in self.phones:
+            if phone.value == p.value:
+                self.phones.remove(p)
+                return f'Phone {phone.value} deleted successful'
+
+    def edit_phone(self, phone: Phone, end_phone: Phone):
+        for p in self.phones:
+            if phone.value == p.value:
+                self.phones.remove(p)
+            if end_phone != p.value:
+                self.phones.append(end_phone)
+                return f'Phone {phone.value} edited on {end_phone.value}'
+
+    def __repr__(self) -> str:
+        return f'{self.name.value} : {[p.value for p in self.phones]}'
+
+    # def __repr__(self) -> str:
+    #     return f'{[p.value for p in self.phones]}'
+
+
+class AddressBook(UserDict):
+    """
+    Логика поиска по записям этого класса
+    """
+
+    def add_record(self, rec):
+        self.data[rec.name.value] = rec
+
+
+if __name__ == '__main__':
+    name_new = Name("Bill")
+    print(name_new.value)
+
+    phone_first = Phone("+380678996765")
+    print(phone_first.value)
+
+    rec = Record(name_new, phone_first)
+    print(rec)
+
+    phone_second = Phone("+293784713")
+    print(phone_second.value)
+
+    rec.add_phone(phone_second)
+    # rec.del_phone(phone_first)
+    # rec.edit_phone(phone_first, phone_second)
+
+    ab = AddressBook()
+    ab.add_record(rec)
+    print(ab)
